@@ -72,14 +72,11 @@ def main():
          
         key_list = pg.key.get_pressed()
         sum_mv=[0,0]
-        kk0=0
-        kk1=0
         for k, mv in delta.items():
             if key_list[k]:
-                kk0=kk0+mv[0]
-                kk1=kk1+mv[1]
                 sum_mv[0]+=mv[0]
                 sum_mv[1]+=mv[1]
+        #kk_rot_img=kk_imgs[tuple(sum_mv)]
         kk_rect.move_ip(sum_mv)
 
         if check_bound(kk_rect) != (True,True):
@@ -91,8 +88,8 @@ def main():
         bd_rect.move_ip(vx,vy)
         yoko,tate=check_bound(bd_rect)
 
-        if kk0 != 0 or kk1 != 0:  # 飛ぶ方向に従ってこうかとん画像を切り替える
-            kk_img = kk_imgs[kk0, kk1]
+        if sum_mv[0] != 0 or sum_mv[1] != 0:  # 飛ぶ方向に従ってこうかとん画像を切り替える
+            kk_img = kk_imgs[tuple(sum_mv)]
         screen.blit(kk_img, kk_rect)
 
         if not yoko:
