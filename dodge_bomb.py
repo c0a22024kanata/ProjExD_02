@@ -36,13 +36,26 @@ def main():
     bd_img.set_colorkey((0,0,0))
     x=random.randint(0,WIDTH)
     y=random.randint(0,HEIGHT)
+    kk_img_2 = pg.transform.flip(kk_img, True, False)  # rotozoomするためのflipしたこうかとんの画像
+    # こうかとんの画像方向の辞書
+    kk_imgs = {
+        (+5, 0): kk_img_2,  # 右方向こうかとんの画像
+        (+5, -5): pg.transform.rotozoom(kk_img_2, 45, 1.0),  # 右上方向こうかとんの画像
+        (0, -5): pg.transform.rotozoom(kk_img_2, 90, 1.0),  # 上方向こうかとんの画像
+        (-5, -5): pg.transform.rotozoom(kk_img, -45, 1.0),  # 左上方向こうかとんの画像
+        (-5, 0): kk_img,  # 左方向こうかとんの画像
+        (-5, +5): pg.transform.rotozoom(kk_img, 45, 1.0),  # 左下方向こうかとんの画像
+        (0, +5): pg.transform.rotozoom(kk_img_2, -90, 1.0),  # 下方向こうかとんの画像
+        (+5, +5): pg.transform.rotozoom(kk_img_2, -45, 1.0),  # 右下方向こうかとんの画像
+        }
+    kk_img1 = kk_imgs[+5, 0]
 
     clock = pg.time.Clock()
     tmr = 0
     bd_rect=bd_img.get_rect()
     bd_rect.center=x,y
     vx,vy=+5,+5
-    kk_rect=kk_img.get_rect()
+    kk_rect=kk_img1.get_rect()
     kk_rect.center=900,400
 
 
@@ -59,11 +72,16 @@ def main():
          
         key_list = pg.key.get_pressed()
         sum_mv=[0,0]
+        kk0=0
+        kk1=0
         for k, mv in delta.items():
             if key_list[k]:
+                kk0=kk0+mv[0]
+                kk1=kk1+mv[1]
                 sum_mv[0]+=mv[0]
                 sum_mv[1]+=mv[1]
         kk_rect.move_ip(sum_mv)
+
         if check_bound(kk_rect) != (True,True):
             kk_rect.move_ip(-sum_mv[0],-sum_mv[1])
 
@@ -72,6 +90,11 @@ def main():
         screen.blit(bd_img,bd_rect)
         bd_rect.move_ip(vx,vy)
         yoko,tate=check_bound(bd_rect)
+
+        if kk0 != 0 or kk1 != 0:  # 飛ぶ方向に従ってこうかとん画像を切り替える
+            kk_img = kk_imgs[kk0, kk1]
+        screen.blit(kk_img, kk_rect)
+
         if not yoko:
             vx *=-1
         if not tate:
